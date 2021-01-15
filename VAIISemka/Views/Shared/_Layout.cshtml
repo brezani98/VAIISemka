@@ -6,6 +6,12 @@
     <title>@ViewData["Title"] - VAIISemka</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+
+    <script src="https://cdn.tiny.cloud/1/vf9kxz72u5879svc21aas54lunpxhe27om680bb0mzbtdaen/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
 </head>
 <body>
     <header>
@@ -41,9 +47,6 @@
             &copy; 2021 - VAIISemka - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VAIISemka.Data;
 
 namespace VAIISemka.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210115123049_TabulkaObrazky")]
+    partial class TabulkaObrazky
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -257,7 +259,12 @@ namespace VAIISemka.Data.Migrations
                     b.Property<string>("ImageName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PostId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PostId");
 
                     b.ToTable("Images");
                 });
@@ -278,12 +285,14 @@ namespace VAIISemka.Data.Migrations
                     b.Property<string>("Header")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ThumbnailImage")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("ThumbnailImageId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
+
+                    b.HasIndex("ThumbnailImageId");
 
                     b.ToTable("Posts");
                 });
@@ -350,11 +359,22 @@ namespace VAIISemka.Data.Migrations
                         .HasForeignKey("PostId");
                 });
 
+            modelBuilder.Entity("VAIISemka.Models.Image", b =>
+                {
+                    b.HasOne("VAIISemka.Models.Post", null)
+                        .WithMany("BodyImages")
+                        .HasForeignKey("PostId");
+                });
+
             modelBuilder.Entity("VAIISemka.Models.Post", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId");
+
+                    b.HasOne("VAIISemka.Models.Image", "ThumbnailImage")
+                        .WithMany()
+                        .HasForeignKey("ThumbnailImageId");
                 });
 #pragma warning restore 612, 618
         }

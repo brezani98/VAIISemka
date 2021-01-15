@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using VAIISemka.Models;
 
 namespace VAIISemka.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
+        public virtual DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<Post> Posts { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
