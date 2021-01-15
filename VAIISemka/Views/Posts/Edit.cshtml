@@ -1,12 +1,12 @@
 ﻿@model VAIISemka.Models.Post
 @{
-    ViewData["Title"] = "Create Post";
+    ViewData["Title"] = "Edit Post";
 }
 
 <div class="form-bg">
-    <h4>Vytvorenie článku</h4>
+    <h4>Editovanie článku</h4>
     <hr />
-    <form asp-action="UploadImage" asp-route-editing="false" id="myForm" method="post" runat="server" enctype="multipart/form-data">
+    <form asp-action="UploadImage" asp-route-editing="true" id="myForm" method="post" runat="server" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="row">
             <div class="col-5">
@@ -35,7 +35,7 @@
                     <img src="~/images/@Model.ThumbnailImage" width="100" class="img-thumbnail img-fluid" id="thumbnailImage" alt="Obrázok článku">
                 </div>
                 <div class="col-1 my-auto">
-                    <input asp-action="RemoveImage" asp-route-img="@Model.ThumbnailImage" asp-route-editing="false" type="submit" value="X" class="btn btn-dark" formmethod="post"
+                    <input asp-action="RemoveImage" asp-route-img="@Model.ThumbnailImage" asp-route-editing="true" type="submit" value="X" class="btn btn-dark" formmethod="post"
                            onclick="return confirm('Naozaj chcete odstrániť obrázok ?')" />
                 </div>
             }
@@ -47,14 +47,16 @@
 
         <hr />
 
+        @Html.HiddenFor(Model => Model.Id)
+
         <div class="form-group">
-            <input asp-action="Create" type="submit" value="Vytvoriť" class="btn btn-primary" formmethod="post" onclick="return validate();" />
+            <input asp-action="Edit" type="submit" value="Upraviť" class="btn btn-primary" formmethod="post" onclick="return validate();" />
         </div>
 
     </form>
 
     <div>
-        <a asp-action="Index">Späť na zoznam</a>
+        <a asp-action="Index">Späť na článok</a>
     </div>
 
 </div>
@@ -64,7 +66,7 @@
         selector: '#bodyText',
         plugins: 'advlist autolink link image lists charmap print preview visualblocks'
     });
-        
+
     $('input[type=file]').change(function () {
         $('#myForm').submit();
     });

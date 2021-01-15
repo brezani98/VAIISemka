@@ -6,12 +6,17 @@
 <div class="text-center">
     @for (int i = 0; i < Model.Count; i++)
     {
-    <div>
-        <h4>@Model[i].Header</h4>
-        <p>
-            @Model[i].Body
-        </p>
-        <img src="~/images/@Model[i].ThumbnailImage" width="100" class="img-thumbnail img-fluid" alt="Obrázok článku">
+    <div class="row">
+        <div class="thumb-post col-4">
+            <a asp-action="Details" asp-route-id="@Model[i].Id"><img src="~/images/@Model[i].ThumbnailImage" alt="Obrázok článku"></a>
+        </div>
+
+        <div class="col-8">
+            <a asp-action="Details" asp-route-id="@Model[i].Id" class="text-dark"><h4 class="text-left">@Model[i].Header</h4></a>
+            <p class="text-left">
+                @Html.Raw(Model[i].Body)
+            </p>
+        </div>
     </div>
     }
 </div>

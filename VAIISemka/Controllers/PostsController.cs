@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using VAIISemka.Data;
 using VAIISemka.Models;
 
@@ -22,6 +23,11 @@ namespace VAIISemka.Controllers
 
         public IActionResult Index()
         {
+            var posts = _context.Posts.ToList();
+
+            posts.ForEach(post => post.Body = Regex.Replace(post.Body, "<.*?>", string.Empty));
+            posts.ForEach(post => post.Body = post.Body.Substring(0, Math.Min(post.Body.Length, 500)) + "...");
+
             return View(_context.Posts.ToList());
         }
 
@@ -40,6 +46,42 @@ namespace VAIISemka.Controllers
         public IActionResult Create(Post post)
         {
             _context.Posts.Add(post);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Details(int id)
+        {
+            return View(_context.Posts.FirstOrDefault(post => post.Id == id));
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            return View(_context.Posts.FirstOrDefault(post => post.Id == id));
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Post post)
+        {
+            var original = _context.Posts.FirstOrDefault(original => original.Id == post.Id);
+
+            original.Header = post.Header;
+            original.Body = post.Body;
+            original.ThumbnailImage = post.ThumbnailImage;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Remove(int id)
+        {
+            var postToRemove = _context.Posts.FirstOrDefault(post => post.Id == id);
+
+            _context.Posts.Remove(postToRemove);
             _context.SaveChanges();
 
             return RedirectToAction("Index");
@@ -98,6 +140,12 @@ namespace VAIISemka.Controllers
             {
                 return View("Create", post);
             }
+        }
+
+        public IActionResult CheckHeader(string header, int postID)
+        {
+            bool result = _context.Posts.Any(post => post.Header == header && post.Id != postID);
+            return new JsonResult(result);
         }
     }
 }

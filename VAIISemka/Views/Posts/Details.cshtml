@@ -1,0 +1,19 @@
+﻿@model VAIISemka.Models.Post
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="text-center bg-white">
+    <h2 class="text-left">@Model.Header</h2>
+
+    <img src="~/images/@Model.ThumbnailImage" class="img-fluid" alt="Obrázok článku">
+
+    <p class="text-left bg-dark">
+        @Html.Raw(Model.Body)
+    </p>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Upraviť</a>
+    <a asp-action="Remove" asp-route-id="@Model.Id" class="btn btn-danger">Vymazať</a>
+</div>
