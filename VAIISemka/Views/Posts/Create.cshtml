@@ -1,0 +1,117 @@
+﻿@model VAIISemka.Models.Post
+@{
+    ViewData["Title"] = "Create Post";
+}
+
+<div class="form-bg">
+    <h4>Vytvorenie príspevku</h4>
+    <hr />
+    <form asp-action="UploadImage" asp-route-editing="false" id="myForm" method="post" runat="server" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="col-5">
+                @Html.LabelFor(a => a.Header, new { @class = "font-weight-bold" })
+                @Html.TextBoxFor(a => a.Header, new { @class = "form-control", id = "header" })
+                <span id="headerValidation" class="text-danger"></span>
+                <span id="nazovExistuje" class="text-danger" style="display:none">Zadaný názov článku už existuje.</span>
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            @Html.LabelFor(a => a.Body, new { @class = "font-weight-bold" })
+            @Html.TextAreaFor(a => a.Body, new { id = "bodyText" })
+            <span id="bodyTextValidation" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-4 my-auto">
+                @Html.HiddenFor(a => a.ThumbnailImage)
+                <input type="file" name="thumbnailImage" class="form-control-file" />
+            </div>
+
+            @if (Model.ThumbnailImage != null)
+            {
+                <div class="col-2 my-auto">
+                    <img src="~/images/@Model.ThumbnailImage" width="100" class="img-thumbnail img-fluid" alt="Obrázok otázky">
+                </div>
+                <div class="col-1 my-auto">
+                    <input asp-action="RemoveImage" asp-route-img="@Model.ThumbnailImage" asp-route-editing="false" type="submit" value="X" class="btn btn-dark" formmethod="post"
+                           onclick="return confirm('Naozaj chcete odstrániť obrázok ?')" />
+                </div>
+            }
+
+        </div>
+
+        <hr />
+
+        <div class="form-group">
+            <input asp-action="Create" type="submit" value="Vytvoriť" class="btn btn-primary" formmethod="post" onclick="return validate();" />
+        </div>
+
+    </form>
+
+    <div>
+        <a asp-action="Index">Späť na zoznam</a>
+    </div>
+
+</div>
+
+<script>
+    tinymce.init({
+        selector: '#bodyText',
+        plugins: 'advlist autolink link image lists charmap print preview visualblocks'
+    });
+        
+    $('input[type=file]').change(function () {
+        $('#myForm').submit();
+    });
+
+    $("#header").change(function () {
+        if ($.trim($(this).val()).length == 0) {
+            $('#headerValidation').text("Otázka musí mať názov.");
+        }
+        else {
+            $('#headerValidation').text("");
+        }
+    });
+
+    function validate() {
+        var isValid = true;
+        var editorContent = $.trim(tinyMCE.get('bodyText').getContent({ format: 'text' }));
+        if (editorContent.length == 0) {
+            $('#bodyTextValidation').text("Otázka musí mať vyplnený text.");
+            isValid = false;
+        }
+        if ($.trim($("#header").val()).length == 0) {
+            $('#headerValidation').text("Otázka musí mať názov.");
+            isValid = false;
+        }
+        if ($('#nazovExistuje').is(':visible')) {
+            isValid = false;
+        }
+        if (isValid == false) {
+            alert("Vyplňte prosím všetky požadované polia.");
+        }
+        return isValid;
+    }
+
+    //$(document).ready(function () {
+    //    $('#header').on('change', function () {
+    //        var header = $("#header").val();
+    //        var postID = 0;
+    //        $.ajax({
+    //            type: "POST",
+    //            url: "/posts/checkheader",
+    //            data: { 'header': header, 'postID': postID },
+    //            dataType: "json",
+    //            success: function (response) {
+    //                if (response)
+    //                    $("#nazovExistuje").show();
+    //                else
+    //                    $("#nazovExistuje").hide();
+    //            }
+    //        });
+    //    })
+    //});
+
+</script>
