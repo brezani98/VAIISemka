@@ -2,6 +2,9 @@
 @{
     ViewData["Title"] = "Details";
 }
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 
 <div class="text-center bg-white">
 
@@ -22,7 +25,10 @@
     </p>
 </div>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Upraviť</a>
-    <a asp-action="Remove" asp-route-id="@Model.Id" class="btn btn-danger">Vymazať</a>
-</div>
+@if (SignInManager.IsSignedIn(User))
+{
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Upraviť</a>
+        <a asp-action="Remove" asp-route-id="@Model.Id" class="btn btn-danger">Vymazať</a>
+    </div>
+}

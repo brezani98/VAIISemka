@@ -97,7 +97,11 @@ namespace VAIISemka.Controllers
             original.Header = postCategory.Post.Header;
             original.Body = postCategory.Post.Body;
             original.ThumbnailImage = postCategory.Post.ThumbnailImage;
-            original.CreateDate = DateTime.Now;
+
+            if (original.Category == null)
+            {
+                original.Category = new Category();
+            }
 
             if (original.Category.Id != postCategory.Post.Category.Id)
             {

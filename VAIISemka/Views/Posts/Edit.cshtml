@@ -18,6 +18,7 @@
         </div>
         <br />
         @Html.DropDownListFor(a => a.Post.Category.Id, Model.Categories, new { @class = "form-control selectpicker" })
+        @Html.HiddenFor(a => a.Post.Category)
         <br />
         <div class="form-group">
             @Html.LabelFor(a => a.Post.Body, new { @class = "font-weight-bold" })

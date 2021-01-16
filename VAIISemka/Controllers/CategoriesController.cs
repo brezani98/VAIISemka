@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using VAIISemka.Data;
 using VAIISemka.Models;
@@ -71,6 +72,10 @@ namespace VAIISemka.Controllers
         public IActionResult Remove(int id)
         {
             var category = _context.Categories.FirstOrDefault(c => c.Id == id);
+
+            var posts = _context.Posts.Include(post => post.Category).Where(post => post.Category.Id == id).ToList();
+            posts.ForEach(post => post.Category = null);
+            _context.SaveChanges();
 
             _context.Categories.Remove(category);
             _context.SaveChanges();
