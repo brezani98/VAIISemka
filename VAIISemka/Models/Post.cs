@@ -12,8 +12,6 @@ namespace VAIISemka.Models
         public string Header { get; set; }
         public string Body { get; set; }
         public string ThumbnailImage { get; set; }
-
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime CreateDate { get; set; }
         public IdentityUser Author { get; set; }
     }

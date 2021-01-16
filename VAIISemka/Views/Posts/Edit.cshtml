@@ -1,4 +1,4 @@
-﻿@model VAIISemka.Models.Post
+﻿@model VAIISemka.ViewModels.PostCategoryViewModel
 @{
     ViewData["Title"] = "Edit Post";
 }
@@ -10,32 +10,34 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="row">
             <div class="col-5">
-                @Html.LabelFor(a => a.Header, new { @class = "font-weight-bold" })
-                @Html.TextBoxFor(a => a.Header, new { @class = "form-control", id = "header" })
+                @Html.LabelFor(a => a.Post.Header, new { @class = "font-weight-bold" })
+                @Html.TextBoxFor(a => a.Post.Header, new { @class = "form-control", id = "header" })
                 <span id="headerValidation" class="text-danger"></span>
                 <span id="nadpisExistuje" class="text-danger" style="display:none">Zadaný názov článku už existuje.</span>
             </div>
         </div>
         <br />
+        @Html.DropDownListFor(a => a.Post.Category.Id, Model.Categories, new { @class = "form-control selectpicker" })
+        <br />
         <div class="form-group">
-            @Html.LabelFor(a => a.Body, new { @class = "font-weight-bold" })
-            @Html.TextAreaFor(a => a.Body, new { id = "bodyText" })
+            @Html.LabelFor(a => a.Post.Body, new { @class = "font-weight-bold" })
+            @Html.TextAreaFor(a => a.Post.Body, new { id = "bodyText" })
             <span id="bodyTextValidation" class="text-danger"></span>
         </div>
 
         <div class="row">
             <div class="col-4 my-auto">
-                @Html.HiddenFor(a => a.ThumbnailImage)
+                @Html.HiddenFor(a => a.Post.ThumbnailImage)
                 <input type="file" name="thumbnailImage" class="form-control-file" />
             </div>
 
-            @if (Model.ThumbnailImage != null)
+            @if (Model.Post.ThumbnailImage != null)
             {
                 <div class="col-2 my-auto">
-                    <img src="~/images/@Model.ThumbnailImage" width="100" class="img-thumbnail img-fluid" id="thumbnailImage" alt="Obrázok článku">
+                    <img src="~/images/@Model.Post.ThumbnailImage" width="100" class="img-thumbnail img-fluid" id="thumbnailImage" alt="Obrázok článku">
                 </div>
                 <div class="col-1 my-auto">
-                    <input asp-action="RemoveImage" asp-route-img="@Model.ThumbnailImage" asp-route-editing="true" type="submit" value="X" class="btn btn-dark" formmethod="post"
+                    <input asp-action="RemoveImage" asp-route-img="@Model.Post.ThumbnailImage" asp-route-editing="true" type="submit" value="X" class="btn btn-dark" formmethod="post"
                            onclick="return confirm('Naozaj chcete odstrániť obrázok ?')" />
                 </div>
             }
@@ -47,7 +49,7 @@
 
         <hr />
 
-        @Html.HiddenFor(Model => Model.Id)
+        @Html.HiddenFor(Model => Model.Post.Id)
 
         <div class="form-group">
             <input asp-action="Edit" type="submit" value="Upraviť" class="btn btn-primary" formmethod="post" onclick="return validate();" />

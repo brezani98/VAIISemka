@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Remove="Data\Migrations\20210115103315_TabulkyPostComment.cs" />
     <Compile Remove="Data\Migrations\20210115103315_TabulkyPostComment.Designer.cs" />
+    <Compile Remove="Data\Migrations\20210116125455_nejakezmeny.cs" />
+    <Compile Remove="Data\Migrations\20210116125455_nejakezmeny.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

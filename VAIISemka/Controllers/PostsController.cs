@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using VAIISemka.Data;
 using VAIISemka.Models;
+using VAIISemka.ViewModels;
 
 namespace VAIISemka.Controllers
 {
@@ -31,29 +33,38 @@ namespace VAIISemka.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            var posts = _context.Posts.Include(post => post.Author).ToList();
+            var posts = _context.Posts.Include(post => post.Category)
+                                        .Include(post => post.Author)
+                                        .OrderByDescending(post => post.CreateDate.Date)
+                                        .ThenByDescending(post => post.CreateDate.TimeOfDay)
+                                        .ToList();
 
             posts.ForEach(post => post.Body = Regex.Replace(post.Body, "<.*?>", string.Empty));
             posts.ForEach(post => post.Body = post.Body.Substring(0, Math.Min(post.Body.Length, 400)) + "...");
 
-            return View(_context.Posts.ToList());
+            return View(posts);
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            Post post = new Post();
+            var postCategory = new PostCategoryViewModel()
+            {
+                Post = new Post(),
+                Categories = GetCategoriesAsSelectListItems()
+            };
 
-            return View(post);
+            return View(postCategory);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Post post)
+        public async Task<IActionResult> Create(PostCategoryViewModel postCategory)
         {
-            post.Author = await _userManager.GetUserAsync(User);
-            post.CreateDate = DateTime.Now;
+            postCategory.Post.Author = await _userManager.GetUserAsync(User);
+            postCategory.Post.CreateDate = DateTime.Now;
+            postCategory.Post.Category = _context.Categories.FirstOrDefault(category => category.Id == postCategory.Post.Category.Id);
 
-            _context.Posts.Add(post);
+            _context.Posts.Add(postCategory.Post);
             _context.SaveChanges();
 
             return RedirectToAction("Index");
@@ -63,24 +74,35 @@ namespace VAIISemka.Controllers
         [HttpGet]
         public IActionResult Details(int id)
         {
-            return View(_context.Posts.FirstOrDefault(post => post.Id == id));
+            return View(_context.Posts.Include(post => post.Category).Include(post => post.Author).FirstOrDefault(post => post.Id == id));
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            return View(_context.Posts.FirstOrDefault(post => post.Id == id));
+            var postCategory = new PostCategoryViewModel()
+            {
+                Post = _context.Posts.Include(post => post.Category).FirstOrDefault(post => post.Id == id),
+                Categories = GetCategoriesAsSelectListItems()
+            };
+
+            return View(postCategory);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Post post)
+        public async Task<IActionResult> Edit(PostCategoryViewModel postCategory)
         {
-            var original = _context.Posts.FirstOrDefault(original => original.Id == post.Id);
+            var original = _context.Posts.Include(post => post.Category).Include(post => post.Author).FirstOrDefault(original => original.Id == postCategory.Post.Id);
 
-            original.Header = post.Header;
-            original.Body = post.Body;
-            original.ThumbnailImage = post.ThumbnailImage;
+            original.Header = postCategory.Post.Header;
+            original.Body = postCategory.Post.Body;
+            original.ThumbnailImage = postCategory.Post.ThumbnailImage;
             original.CreateDate = DateTime.Now;
+
+            if (original.Category.Id != postCategory.Post.Category.Id)
+            {
+                original.Category = _context.Categories.FirstOrDefault(category => category.Id == postCategory.Post.Category.Id);
+            }
             
             if (original.Author == null)
             {
@@ -103,7 +125,7 @@ namespace VAIISemka.Controllers
         }
 
         [HttpPost]
-        public ActionResult UploadImage(Post post, bool editing)
+        public ActionResult UploadImage(PostCategoryViewModel postCategory, bool editing)
         {
             string webRootPath = _hostEnvironment.WebRootPath;
             var files = HttpContext.Request.Form.Files;
@@ -117,43 +139,45 @@ namespace VAIISemka.Controllers
                 using (var filestream = new FileStream(Path.Combine(uploads, fileName), FileMode.Create))
                 {
                     file.CopyTo(filestream);
-                    post.ThumbnailImage = fileName;
+                    postCategory.Post.ThumbnailImage = fileName;
                 }
             }
 
             ModelState.Clear();
+            postCategory.Categories = GetCategoriesAsSelectListItems();
 
             if (editing)
             {
-                return View("Edit", post);
+                return View("Edit", postCategory);
             }
             else
             {
-                return View("Create", post);
+                return View("Create", postCategory);
             }
         }
 
         [HttpPost]
-        public ActionResult RemoveImage(Post post, string img, bool editing)
+        public ActionResult RemoveImage(PostCategoryViewModel postCategory, string img, bool editing)
         {
-            if (post.ThumbnailImage == img)
+            if (postCategory.Post.ThumbnailImage == img)
             {
                 var path = Path.Combine(_hostEnvironment.WebRootPath, @"images", img);
                 if (System.IO.File.Exists(path))
                     System.IO.File.Delete(path);
 
-                post.ThumbnailImage = null;
+                postCategory.Post.ThumbnailImage = null;
             }
 
             ModelState.Clear();
+            postCategory.Categories = GetCategoriesAsSelectListItems();
 
             if (editing)
             {
-                return View("Edit", post);
+                return View("Edit", postCategory);
             }
             else
             {
-                return View("Create", post);
+                return View("Create", postCategory);
             }
         }
 
@@ -161,6 +185,15 @@ namespace VAIISemka.Controllers
         {
             bool result = _context.Posts.Any(post => post.Header == header && post.Id != postID);
             return new JsonResult(result);
+        }
+
+        private List<SelectListItem> GetCategoriesAsSelectListItems()
+        {
+            return _context.Categories.Select(c => new SelectListItem
+            {
+                Text = c.Name,
+                Value = c.Id.ToString()
+            }).ToList();
         }
     }
 }
