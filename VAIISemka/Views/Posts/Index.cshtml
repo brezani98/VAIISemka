@@ -12,10 +12,21 @@
         </div>
 
         <div class="col-8">
-            <a asp-action="Details" asp-route-id="@Model[i].Id" class="text-dark"><h4 class="text-left">@Model[i].Header</h4></a>
-            <p class="text-left">
+
+            <div class="row">
+                <a asp-action="Details" asp-route-id="@Model[i].Id" class="text-dark"><h4 class="text-left">@Model[i].Header</h4></a>
+            </div>
+            <div class="row">
+                <div class="col-6 text-left no-padding">
+                    <span>@Model[i].CreateDate</span>
+                </div>
+                <div class="col-6 text-right no-padding">
+                    <span>@(Model[i].Author == null ? "Anonym" : Model[i].Author.UserName)</span>
+                </div>
+            </div>
+            <div class="row text-left">
                 @Html.Raw(Model[i].Body)
-            </p>
+            </div>
         </div>
     </div>
     }

@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using VAIISemka.Data;
 using VAIISemka.Models;
 
@@ -14,16 +17,18 @@ namespace VAIISemka.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public PostsController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment)
+        public PostsController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _hostEnvironment = hostEnvironment;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
         {
-            var posts = _context.Posts.ToList();
+            var posts = _context.Posts.Include(post => post.Author).ToList();
 
             posts.ForEach(post => post.Body = Regex.Replace(post.Body, "<.*?>", string.Empty));
             posts.ForEach(post => post.Body = post.Body.Substring(0, Math.Min(post.Body.Length, 500)) + "...");
@@ -43,8 +48,11 @@ namespace VAIISemka.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Post post)
+        public async Task<IActionResult> Create(Post post)
         {
+            post.Author = await _userManager.GetUserAsync(User);
+            post.CreateDate = DateTime.Now;
+
             _context.Posts.Add(post);
             _context.SaveChanges();
 
@@ -71,6 +79,7 @@ namespace VAIISemka.Controllers
             original.Header = post.Header;
             original.Body = post.Body;
             original.ThumbnailImage = post.ThumbnailImage;
+            original.CreateDate = DateTime.Now;
 
             _context.SaveChanges();
 

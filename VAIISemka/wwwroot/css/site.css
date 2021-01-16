@@ -77,3 +77,8 @@ body {
     max-height: 180px;
     margin-bottom: 1rem;
 }
+
+.no-padding {
+    padding-left: 0px;
+    padding-right: 0px;
+}
