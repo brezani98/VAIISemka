@@ -82,5 +82,11 @@ namespace VAIISemka.Controllers
 
             return RedirectToAction("Index");
         }
+
+        public IActionResult CheckHeader(string header, int categoryID)
+        {
+            bool result = _context.Categories.Any(category => category.Name == header && category.Id != categoryID);
+            return new JsonResult(result);
+        }
     }
 }

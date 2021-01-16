@@ -53,11 +53,11 @@
     $(document).ready(function () {
         $('#header').on('change', function () {
             var header = $("#header").val();
-            var categoryId = 0;
+            var categoryID = 0;
             $.ajax({
                 type: "POST",
                 url: "/categories/checkheader",
-                data: { 'header': header, 'categoryId': categoryId },
+                data: { 'header': header, 'categoryId': categoryID },
                 dataType: "json",
                 success: function (response) {
                     if (response)
