@@ -1,0 +1,26 @@
+﻿@model List<VAIISemka.Models.Category>
+@{
+    ViewData["Title"] = "Posts";
+}
+
+<div class="text-center">
+
+    <div class="text-left">
+        <a asp-controller="Categories" asp-action="Create" class="btn btn-secondary">Pridať kategóriu</a>
+    </div>
+    <br />
+
+    <table class="table text-left">
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <th scope="row">1.</th>
+                    <td class="font-weight-bold">@Model[i].Name</td>
+                    <td><a asp-action="Edit" asp-route-id="@Model[i].Id" class="text-secondary">Upraviť</a></td>
+                    <td><a asp-action="Remove" asp-route-id="@Model[i].Id" class="text-danger">Vymazať</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

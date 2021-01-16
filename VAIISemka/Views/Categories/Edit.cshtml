@@ -1,0 +1,72 @@
+﻿@model VAIISemka.Models.Category
+@{
+    ViewData["Title"] = "Edit Category";
+}
+
+<div class="form-bg">
+    <h4>Vytvorenie kategórie</h4>
+    <hr />
+    <form>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="col-5">
+                @Html.LabelFor(a => a.Name, new { @class = "font-weight-bold" })
+                @Html.TextBoxFor(a => a.Name, new { @class = "form-control", id = "header" })
+                <span id="headerValidation" class="text-danger"></span>
+                <span id="nadpisExistuje" class="text-danger" style="display:none">Zadaný názov článku už existuje.</span>
+            </div>
+        </div>
+        @Html.HiddenFor(a => a.Id)
+        <br />
+        <hr />
+
+        <div class="form-group">
+            <input asp-action="Edit" type="submit" value="Vytvoriť" class="btn btn-primary" formmethod="post" onclick="return validate();" />
+        </div>
+
+    </form>
+
+    <div>
+        <a asp-action="Index">Späť na zoznam</a>
+    </div>
+
+</div>
+
+<script>
+
+
+    function validate() {
+        var isValid = true;
+        if ($.trim($("#header").val()).length == 0) {
+            $('#headerValidation').text("Kategória musí mať názov.");
+            isValid = false;
+        }
+        if ($('#nadpisExistuje').is(':visible')) {
+            isValid = false;
+        }
+        if (isValid == false) {
+            alert("Vyplňte prosím všetky požadované polia.");
+        }
+        return isValid;
+    }
+
+    $(document).ready(function () {
+        $('#header').on('change', function () {
+            var header = $("#header").val();
+            var categoryId = 0;
+            $.ajax({
+                type: "POST",
+                url: "/categories/checkheader",
+                data: { 'header': header, 'categoryId': categoryId },
+                dataType: "json",
+                success: function (response) {
+                    if (response)
+                        $("#nadpisExistuje").show();
+                    else
+                        $("#nadpisExistuje").hide();
+                }
+            });
+        })
+    });
+
+</script>

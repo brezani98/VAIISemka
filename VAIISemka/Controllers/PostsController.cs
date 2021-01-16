@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using VAIISemka.Models;
 
 namespace VAIISemka.Controllers
 {
+    [Authorize]
     public class PostsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -26,12 +28,13 @@ namespace VAIISemka.Controllers
             _userManager = userManager;
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var posts = _context.Posts.Include(post => post.Author).ToList();
 
             posts.ForEach(post => post.Body = Regex.Replace(post.Body, "<.*?>", string.Empty));
-            posts.ForEach(post => post.Body = post.Body.Substring(0, Math.Min(post.Body.Length, 500)) + "...");
+            posts.ForEach(post => post.Body = post.Body.Substring(0, Math.Min(post.Body.Length, 400)) + "...");
 
             return View(_context.Posts.ToList());
         }
@@ -39,10 +42,7 @@ namespace VAIISemka.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            Post post = new Post
-            {
-                Comments = new List<Comment>(),
-            };
+            Post post = new Post();
 
             return View(post);
         }
@@ -59,6 +59,7 @@ namespace VAIISemka.Controllers
             return RedirectToAction("Index");
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Details(int id)
         {
@@ -72,7 +73,7 @@ namespace VAIISemka.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Post post)
+        public async Task<IActionResult> Edit(Post post)
         {
             var original = _context.Posts.FirstOrDefault(original => original.Id == post.Id);
 
@@ -80,6 +81,11 @@ namespace VAIISemka.Controllers
             original.Body = post.Body;
             original.ThumbnailImage = post.ThumbnailImage;
             original.CreateDate = DateTime.Now;
+            
+            if (original.Author == null)
+            {
+                original.Author = await _userManager.GetUserAsync(User);
+            }
 
             _context.SaveChanges();
 
