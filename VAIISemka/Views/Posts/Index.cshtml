@@ -26,7 +26,9 @@
 
             <div class="col-8">
                 <div class="row">
-                    <span class="font-weight-bold" style="color:darkorange">@(Model[i].Category == null ? "Nezaradené" : Model[i].Category.Name)</span>
+                    <a asp-action="FilterByCategory" asp-route-categoryId="@(Model[i].Category == null ? 0 : Model[i].Category.Id)" class="font-weight-bold" style="color:darkorange">
+                        @(Model[i].Category == null ? "Nezaradené" : Model[i].Category.Name)
+                    </a>
                 </div>
 
                 <div class="row">

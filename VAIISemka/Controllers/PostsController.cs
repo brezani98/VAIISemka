@@ -35,14 +35,44 @@ namespace VAIISemka.Controllers
         {
             var posts = _context.Posts.Include(post => post.Category)
                                         .Include(post => post.Author)
-                                        .OrderByDescending(post => post.CreateDate.Date)
-                                        .ThenByDescending(post => post.CreateDate.TimeOfDay)
                                         .ToList();
+
+            posts = ConvertPostsToThumbnailStyle(posts);
+
+            return View(posts);
+        }
+
+        [AllowAnonymous]
+        public IActionResult FilterByCategory(int categoryId)
+        {
+            IQueryable<Post> query = _context.Posts.Include(post => post.Category)
+                                                .Include(post => post.Author);
+
+            if (categoryId == 0)
+            {
+                query = query.Where(post => post.Category == null);
+            }
+            else
+            {
+                query = query.Where(post => post.Category.Id == categoryId);
+            }
+
+            var postsByCategory = query.ToList();
+            postsByCategory = ConvertPostsToThumbnailStyle(postsByCategory);
+
+            return View("Index", postsByCategory);
+        }
+
+        private List<Post> ConvertPostsToThumbnailStyle(List<Post> posts)
+        {
+            posts = posts.OrderByDescending(post => post.CreateDate.Date)
+                            .ThenByDescending(post => post.CreateDate.TimeOfDay)
+                            .ToList();
 
             posts.ForEach(post => post.Body = Regex.Replace(post.Body, "<.*?>", string.Empty));
             posts.ForEach(post => post.Body = post.Body.Substring(0, Math.Min(post.Body.Length, 400)) + "...");
 
-            return View(posts);
+            return posts;
         }
 
         [HttpGet]
