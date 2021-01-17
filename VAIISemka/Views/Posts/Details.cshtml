@@ -15,6 +15,9 @@
     <h2 class="text-left">@Model.Header</h2>
 
     <div class="text-left">
+        <span class="text-dark">@Model.Author</span>
+    </div>
+    <div class="text-left">
         <span class="text-secondary">@Model.CreateDate</span>
     </div>
 
@@ -25,10 +28,20 @@
     </p>
 </div>
 
-@if (SignInManager.IsSignedIn(User))
+@if (SignInManager.IsSignedIn(User) && User.Identity.Name == Model.Author.UserName)
 {
     <div>
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Upraviť</a>
-        <a asp-action="Remove" asp-route-id="@Model.Id" class="btn btn-danger">Vymazať</a>
+        <a asp-action="Remove" asp-route-id="@Model.Id" class="btn btn-danger" onclick='return check()' >Vymazať</a>
     </div>
 }
+
+<script>
+    function check()
+    {
+        if (confirm('Naozaj chcete vymazať?')) {
+            return true;
+        }
+        return false;
+    }
+</script>
