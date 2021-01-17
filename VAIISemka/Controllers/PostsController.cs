@@ -40,7 +40,12 @@ namespace VAIISemka.Controllers
                                         .ToList();
 
             posts.ForEach(post => post.Body = Regex.Replace(post.Body, "<.*?>", string.Empty));
-            posts.ForEach(post => post.Body = post.Body.Substring(0, Math.Min(post.Body.Length, 400)) + "...");
+            posts.ForEach(post => post.Body = post.Body.Substring(0, Math.Min(post.Body.Length, 400)) );   
+            for (int i = 0; i < posts.Count; i++)
+            {
+                if (posts[i].Body.Length >= 395)
+                    posts[i].Body += "...";
+            }
 
             return View(posts);
         }
