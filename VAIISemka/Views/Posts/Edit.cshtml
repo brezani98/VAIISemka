@@ -23,7 +23,7 @@
         <div class="form-group">
             @Html.LabelFor(a => a.Post.Body, new { @class = "font-weight-bold" })
             @Html.TextAreaFor(a => a.Post.Body, new { id = "bodyText" })
-            <span id="bodyTextValidation" class="text-danger"></span>
+            <span id="bodyTextValidation" class="text-danger" ></span>
         </div>
 
         <div class="row">
@@ -67,7 +67,8 @@
 <script>
     tinymce.init({
         selector: '#bodyText',
-        plugins: 'advlist autolink link image lists charmap print preview visualblocks'
+        plugins: 'advlist autolink link image lists charmap print preview visualblocks',
+        plugins: 'autoresize'
     });
 
     $('input[type=file]').change(function () {

@@ -6,6 +6,17 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
+
+@if (SignInManager.IsSignedIn(User) && User.Identity.Name == Model.Author.UserName)
+{
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Upraviť</a>
+        <a asp-action="Remove" asp-route-id="@Model.Id" class="btn btn-danger" onclick='return check()'>Vymazať</a>
+    </div>
+}
+
+
+
 <div class="text-center bg-white">
 
     <div class="text-left">
@@ -28,17 +39,10 @@
     </p>
 </div>
 
-@if (SignInManager.IsSignedIn(User) && User.Identity.Name == Model.Author.UserName)
-{
-    <div>
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Upraviť</a>
-        <a asp-action="Remove" asp-route-id="@Model.Id" class="btn btn-danger" onclick='return check()' >Vymazať</a>
-    </div>
-}
+
 
 <script>
-    function check()
-    {
+    function check() {
         if (confirm('Naozaj chcete vymazať?')) {
             return true;
         }
